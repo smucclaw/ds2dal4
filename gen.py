@@ -2,10 +2,10 @@
 # DADataType object types and the s(CASP) reasoner on the basis of a YAML
 # description of a data structure.
 
-# TODO: Is it not collecting lists properly where they are the source for another question.
-# TODO: We might be able to solve that by amending the order of the agenda manually, but
-# TODO: I suspect it should be possible to fix automatically.
-# TODO: Some things that are not mandatory are being made mandatory in the interviews.
+# TODO: An optional Object Reference (min 0 max 1) is being treated as mandatory.
+# TODO: This is a challenging problem to solve, because it's an interface issue, so
+# TODO: We will need to add information to the .using clause of all types to indicate
+# TODO: Whether or not fields are required.
 
 from os import error
 import yaml
@@ -153,8 +153,6 @@ def make_complete_code_block(input_object,root=""):
     return output
 
 def generate_object(input_object,root=""):
-    # TODO: Currently, it does not generate the .using clause for DADTObjectRef
-    # or DADTEnum inside lists.
     if root == "":
         dot = ""
     else:
@@ -181,12 +179,13 @@ def generate_object(input_object,root=""):
     else:
         new_root = root + dot + input_object['name']
         this_root = new_root
-    output = "  - " + this_root + ": "
+    output = "  - " + this_root + ": |\n      "
     if is_list(input_object):
         output += "DAList.using(object_type=" + generate_DADTDataType(input_object['type'])
-        # TODO: At this point, check to see if it is a DADTEnum or DADTObjectRef and
-        # generate .using clauses.
-        
+        if input_object['type'] == "Enum":
+            output += ".using(options=" + input_object['options'] + ")"
+        if input_object['type'] == "Object":
+            output += ".using(source=" + input_object['source'] + ")"
         if 'minimum' in input_object:
             output += ",minimum=" + str(input_object['minimum'])
         if 'maximum' in input_object:
@@ -198,8 +197,7 @@ def generate_object(input_object,root=""):
         output += ",complete_attribute=\"complete\")\n"
     else:
         if input_object['type'] == "Enum":
-            output += "|\n"
-            output += "      " + generate_DADTDataType(input_object['type']) + ".using(options="
+            output += generate_DADTDataType(input_object['type']) + ".using(options="
             output += str(input_object['options']) + ")\n"
         else:
             if input_object['type'] == "Object":
