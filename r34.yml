@@ -13,15 +13,15 @@ data:
     - name: joint_law_venture
       type: Boolean
       encodings:
-        - joint_law_venture(X)
+        - joint_law_venture(Y)
     - name: formal_law_alliance
       type: Boolean
       encodings: 
-        - formal_law_alliance(X)
+        - formal_law_alliance(Y)
     - name: foreign_law_practice
       type: Boolean
       encodings:
-        - foreign_law_practice(X)
+        - foreign_law_practice(Y)
     - name: jurisdiction
       type: Enum
       options:
@@ -32,6 +32,7 @@ data:
     - name: legal_practitioner
       type: Object
       source: person
+      minimum: 0
       encodings:
         - legal_practitioner(X)
         - in(X,Y)
@@ -39,7 +40,7 @@ data:
         - name: locum_solicitor
           type: Boolean
           encodings:
-            - locum_solicitor(X)
+            - locum_solicitor(Y)
         - name: primary_occupation
           type: Enum
           encodings:

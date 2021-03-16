@@ -84,28 +84,60 @@ def main():
     print(output)
 
 def generate_translation_code(input_object,indent_level=2,parent=""):
-    # TODO: This is a huge mess.
-    # TODO: Change it so that Booleans get entered if they are true, and not otherwise.
-    # TODO: It does not seem to choose when to indent properly.
+    # TODO: Booleans should be entered if they are true.
+    # TODO: Object References should return .value.value
     output = ""
-    indent = (" ") * indent_level
-    #output += indent + "# Regarding " + input_object['name'] + "\n"
-    if 'encodings' in input_object:
-        if is_list(input_object):
-            if parent == "": # This is a root list
-                output += indent + "for " + input_object['name'] + "_element in " + input_object['name'] + ":\n"
-                for e in input_object['encodings']:
-                    output += indent + "  facts += \"" + e.replace('X',"\" + " + input_object['name'] + "_element.value + \"") + ".\\n\"\n"
-            else: # This is a non-root list
-                output += indent + "for " + input_object['name'] + "_element in " + parent + "." + input_object['name'] + ":\n"
-                for e in input_object['encodings']:
-                    output += indent + "  facts += \"" + e.replace('X',"\" + " + input_object['name'] + "_element.value + \"").replace('Y',"\" + " + parent + ".value + \"") + ".\\n\"\n"
-        else: # This is not a list.
+    def indent(): return (" ") * indent_level
+    output += indent() + "# Regarding " + input_object['name'] + "\n"
+    if is_list(input_object):
+        if parent == "": # This is a root list
+            output += indent() + "for " + input_object['name'] + "_element in " + input_object['name'] + ":\n"
+        else: # This is a non-root list
+            output += indent() + "for " + input_object['name'] + "_element in " + parent + "." + input_object['name'] + ":\n"
+        indent_level += 2
+        if 'encodings' in input_object:
+            if input_object['type'] == "Boolean":
+                if parent == "":
+                    output += indent() + "if " + input_object['name'] + "_element.value:\n"
+                else:
+                    output += indent() + "if " + parent + "." + input_object['name'] + "_element.value:\n"
+                indent_level += 2
             for e in input_object['encodings']:
-                output += indent + "facts += \"" + e.replace('X',"\" + " + parent + "." + input_object['name'] + ".value + \"").replace('Y',"\" + " + parent + ".value + \"") + ".\\n\"\n"
-    if 'attributes' in input_object:
-        for a in input_object['attributes']:
-            output += generate_translation_code(a,indent_level+2,input_object['name'] + "_element")
+                if parent == "":
+                    output += indent() + "facts += \"" + e.replace('X',"\" + str(" + input_object['name'] + "_element.value) + \"") + ".\\n\"\n"
+                else:
+                    output += indent() + "facts += \"" + e.replace('X',"\" + str(" + input_object['name'] + "_element.value) + \"").replace('Y',"\" + str(" + parent + ".value) + \"") + ".\\n\"\n"
+            if input_object['type'] == "Boolean":
+                indent_level -= 2
+        if 'attributes' in input_object:
+            for a in input_object['attributes']:
+                output += generate_translation_code(a,indent_level,input_object['name'] + "_element")
+                #if parent == "":
+                #    output += generate_translation_code(a,indent_level,input_object['name'] + "_element")
+                #else:
+                #    output += generate_translation_code(a,indent_level,parent + "." + input_object['name'] + "_element")
+        output += indent() + "pass # to end empty for loops\n"
+    else: # This is not a list.
+        if 'encodings' in input_object:
+            if input_object['type'] == "Boolean":
+                if parent == "":
+                    output += indent() + "if " + input_object['name'] + ".value:\n"
+                else:
+                    output += indent() + "if " + parent + "." + input_object['name'] + ".value:\n"
+                indent_level += 2
+            for e in input_object['encodings']:
+                if parent == "":
+                    output += indent() + "facts += \"" + e.replace('X',"\" + str(" + input_object['name'] + ".value) + \"") + ".\\n\"\n"
+                else:
+                    output += indent() + "facts += \"" + e.replace('X',"\" + str(" + parent + "." + input_object['name'] + ".value) + \"").replace('Y',"\" + str(" + parent + ".value) + \"") + ".\\n\"\n"
+            if input_object['type'] == "Boolean":
+                indent_level -= 2
+        if 'attributes' in input_object:
+            for a in input_object['attributes']:
+                if parent == "":
+                    output += generate_translation_code(a,indent_level,input_object['name'])
+                else:
+                    output += generate_translation_code(a,indent_level,parent + "." + input_object['name'])
     return output
 
 def make_complete_code_block(input_object,root=""):
