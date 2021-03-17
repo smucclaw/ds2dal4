@@ -2,10 +2,23 @@
 # DADataType object types and the s(CASP) reasoner on the basis of a YAML
 # description of a data structure.
 
-# TODO: An optional Object Reference (min 0 max 1) is being treated as mandatory.
-# TODO: This is a challenging problem to solve, because it's an interface issue, so
-# TODO: We will need to add information to the .using clause of all types to indicate
-# TODO: Whether or not fields are required.
+# TODO: Generate good custom question texts.
+# The user should be able to add a field to the YAML called
+# ask, which can include Y as a variable, where Y is the
+# parent_value for the object. The text should be split
+# around Y, into a preq variable, and a postq variable,
+# which are added to the object definition in .using.
+# Then, the interface should check to see if they exist,
+# and if they do, use them instead of the default question,
+# using x.preq + x.parent_name + x.postq as the question.
+# It should also be possible to define
+# a parent display entity with Y in it, so that can be
+# used to build the parent_value attribute instead.
+# if legal_practice['parent_text']: the law practice called X
+# and legal_practice['legal_professional']['parent_text']: the lawyer X in Y
+# then asking for their age should look like this:
+# ask: What is the age of Y?
+# Becomes "What is the age of the lawyer Jason in the law practice called Firm LLP?"
 
 from os import error
 import yaml
@@ -66,7 +79,13 @@ def main():
         output += generate_translation_code(var)
     output += "---\n"
 
+    ## Generate a Code Block that defines the .parent_value
+    ## and .self_value attribute for all objects.
+    for var in data_structure['data']:
+        output += generate_parent_values(var)
+
     ## Generate Mandatory Code Block That Will Prompt Collection
+    ## TODO: Update this to eliminate the need to include .gather() or .value
     output += "mandatory: True\n"
     output += "code: |\n"
     output += "  for a in agenda:\n"
@@ -83,8 +102,71 @@ def main():
     ## Print the output (for testing)
     print(output)
 
+def generate_parent_values(input_object,parent="",parent_is_list=False,parent_is_objref=False):
+    output = ""
+    if "[i]" not in parent:
+        nextlevel = "[i]"
+        level=""
+    else:
+        if "[j]" not in parent:
+            nextlevel = "[j]"
+            level = "[i]"
+        else:
+            if "[k]" not in parent:
+                nextlevel = "[k]"
+                level = "[j]"
+            else:
+                if "[l]" not in parent:
+                    nextlevel = "[l]"
+                    level = "[k]"
+                else:
+                    if "[m]" not in parent:
+                        nextlevel = "[m]"
+                        level = "[l]"
+                    else:
+                        raise error("Docassemble cannot handle nested lists of depth > 5")
+    if parent == "":
+        dot = ""
+    else:
+        dot = "."
+    if parent_is_list:
+        index = nextlevel
+    else:
+        index = level
+    output += "code: |\n"
+    output += "  " + parent + index + dot + input_object['name'] + '.self_value = "' + input_object['name'].replace('_',' ') + '"\n'
+    if parent != "": # This object has a parent
+        #TODO: Allow the user to customize how this name is generated
+        output += "  " + parent + index + dot + input_object['name'] + ".parent_value = " + parent + index + ".value"
+        if parent_is_objref:
+            output += ".value"
+        output += "\n"
+    else:
+        output += "  " + parent + index + dot + input_object['name'] + ".parent_value = ''\n"
+    output += "---\n"
+    if is_list(input_object):
+        if index == "[i]": nextindex = "[j]"
+        if index == "[j]": nextindex = "[k]"
+        if index == "[k]": nextindex = "[l]"
+        if index == "[l]": nextindex = "[m]"
+        if index == "": nextindex = "[i]"
+        output += "code: |\n"
+        output += "  " + parent + index + dot + input_object['name'] + nextindex + '.self_value = "' + input_object['name'].replace('_',' ') + '"\n'
+        if parent != "": # This object has a parent
+            #TODO: Allow the user to customize how this name is generated
+            output += "  " + parent + index + dot + input_object['name'] + nextindex + ".parent_value = " + parent + index + ".value"
+            if parent_is_objref:
+                output += ".value"
+            output += "\n"
+        else:
+            output += "  " + parent + index + dot + input_object['name'] + nextindex + ".parent_value = ''\n"
+        output += "---\n"
+    if 'attributes' in input_object:
+        for a in input_object['attributes']:
+            output += generate_parent_values(a,parent + index + dot + input_object['name'],is_list(input_object),input_object['type'] == 'Object')
+    return output
+
 def generate_translation_code(input_object,indent_level=2,parent=""):
-    # TODO: Booleans should be entered if they are true.
     # TODO: Object References should return .value.value
     output = ""
     def indent(): return (" ") * indent_level
@@ -112,10 +194,6 @@ def generate_translation_code(input_object,indent_level=2,parent=""):
         if 'attributes' in input_object:
             for a in input_object['attributes']:
                 output += generate_translation_code(a,indent_level,input_object['name'] + "_element")
-                #if parent == "":
-                #    output += generate_translation_code(a,indent_level,input_object['name'] + "_element")
-                #else:
-                #    output += generate_translation_code(a,indent_level,parent + "." + input_object['name'] + "_element")
         output += indent() + "pass # to end empty for loops\n"
     else: # This is not a list.
         if 'encodings' in input_object:
@@ -164,10 +242,8 @@ def make_complete_code_block(input_object,root=""):
                         raise error("Docassemble cannot handle nested lists of depth > 5")
     if is_list(input_object):
         new_root = root + dot + input_object['name'] + level
-        this_root = root + dot + input_object['name']
     else:
         new_root = root + dot + input_object['name']
-        this_root = new_root
     if is_list(input_object):
         output += "code: |\n"
         output += "  " + new_root + ".value\n"
@@ -185,6 +261,7 @@ def make_complete_code_block(input_object,root=""):
     return output
 
 def generate_object(input_object,root=""):
+    #TODO: Include preq and postq from ask attributes
     if root == "":
         dot = ""
     else:
@@ -226,6 +303,10 @@ def generate_object(input_object,root=""):
             output += ",target_number=" + str(input_object['exactly'])
         if 'exactly' in input_object:
             output += ",ask_number=True"
+        # The following treats optional single elements as lists of max length 1.
+        if 'minimum' in input_object and 'maximum' in input_object:
+            if input_object['minimum'] == 0 and input_object['maximum'] == 1:
+                output += ",there_is_another=False"
         output += ",complete_attribute=\"complete\")\n"
     else:
         if input_object['type'] == "Enum":
@@ -279,6 +360,12 @@ def is_list(input):
     # Something with an exact number above 1 is a list
     if 'exactly' in input and input['exactly'] > 1:
         return True
+    # Something that is optional should be treated as though it was a list
+    # in that you should ask whether it exists before collecting it, but only
+    # collect the one.
+    if 'minimum' in input and 'maximum' in input:
+        if input['minimum'] == 0 and input['maximum'] == 1:
+            return True
     # Otherwise
     return False
 

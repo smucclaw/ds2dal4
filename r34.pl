@@ -454,3 +454,39 @@ non_executive_or_independent_director_in(X,Y) :- independent_director(X), associ
 #pred in_fourth_schedule(X) :: '@(X) is listed in the fourth schedule'.
 
 law_related_service(X) :- service(X), in_fourth_schedule(X).
+
+law_practice(abc_llp).
+
+jurisdiction(abc_llp,singapore).
+
+legal_practitioner(jason).
+
+in(jason,abc_llp).
+
+primary_occupation_of(jason,practicing_as_a_lawyer).
+
+carries_on(megaCorp,widget_sales).
+
+in(ceo,megaCorp).
+
+position(ceo).
+
+associated_with(ceo,widget_sales).
+
+entitles_holder(ceo).
+
+company(megaCorp).
+
+sole_proprietor_of(jason,megaCorp).
+
+business(widget_sales).
+
+detracts_from_dignity_of_legal_profession(widget_sales).
+
+trade(widget_sales).
+
+for_profit(widget_sales).
+
+in(widget_sales,singapore).
+
+?- holds(must_not(Lawyer,accept,Position)).
