@@ -1,36 +1,26 @@
-# Function to generate a Docassemble Interview using
+# Script to generate a Docassemble Interview using
 # DADataType object types and the s(CASP) reasoner on the basis of a YAML
 # description of a data structure.
 
 # TODO: Generate good custom question texts.
-# The user should be able to add a field to the YAML called
-# ask, which can include Y as a variable, where Y is the
-# parent_value for the object. The text should be split
-# around Y, into a preq variable, and a postq variable,
-# which are added to the object definition in .using.
-# Then, the interface should check to see if they exist,
-# and if they do, use them instead of the default question,
-# using x.preq + x.parent_name + x.postq as the question.
-# It should also be possible to define
-# a parent display entity with Y in it, so that can be
-# used to build the parent_value attribute instead.
-# if legal_practice['parent_text']: the law practice called X
-# and legal_practice['legal_professional']['parent_text']: the lawyer X in Y
-# then asking for their age should look like this:
-# ask: What is the age of Y?
-# Becomes "What is the age of the lawyer Jason in the law practice called Firm LLP?"
 
 from os import error
 import yaml
+import argparse
+import sys
 
 def main():
-    with open('r34.yml') as file:
-        data_structure = yaml.load(file, Loader=yaml.FullLoader)
+    parser = argparse.ArgumentParser(description='Generate a docassemble interview from an scasp data structure yaml file.')
+    parser.add_argument('-i', required=True, type=argparse.FileType('r'), metavar="filename", help="YAML to be converted")
+    #parser.add_argument('outfile', nargs='?', type=argparse.FileType('w'), default=sys.stdout, metavar="OUTPUT", help="YAML file to write the interview to (default is STDOUT)")
+    args = parser.parse_args()
+    # TODO: Enable input from STDIN, output to file.
+
+    data_structure = yaml.load(args.i, Loader=yaml.FullLoader)
     
-    ## Include DADataType
-    output = "\n\ninclude:\n"
-    output += "  - DADataType.yml\n"
-    output += "  - DAScasp.yml\n"
+    ## Include Docassemble-l4, which imports docassemble.scasp and docassemble.datatypes
+    output = "include:\n"
+    output += "  - docassemble.l4:l4.yml\n"
     output += "---\n"
 
     ## Generate the parameters for DAScasp
@@ -66,10 +56,7 @@ def main():
     output += "variable name: agenda\n"
     output += "data:\n"
     for var in data_structure['data']:
-        if is_list(var):
-            output += "  - " + var['name'] + ".gather()\n"
-        else:
-            output += "  - " + var['name'] + ".value\n"
+        output += add_to_agenda(var)
     output += "---\n"
 
     ## Generate a Code Block That will Generate s(CASP) code.
@@ -85,7 +72,7 @@ def main():
         output += generate_parent_values(var)
 
     ## Generate Mandatory Code Block That Will Prompt Collection
-    ## TODO: Update this to eliminate the need to include .gather() or .value
+    ## TODO: Update this to eliminate the need to include .gather() or .value in the agenda
     output += "mandatory: True\n"
     output += "code: |\n"
     output += "  for a in agenda:\n"
@@ -96,11 +83,50 @@ def main():
     output += "mandatory: True\n"
     output += "question: Finished\n"
     output += "subquestion: |\n"
-    output += "  ${ show_answers }\n"
+    output += "  ${ DAScasp_show_answers }\n"
     output += "---\n"
 
     ## Print the output (for testing)
     print(output)
+
+def add_to_agenda(input_object,root=""):
+    #For the main element
+    # If it is a list, add it to the agenda with a .gather()
+    # Otherwise, add it to the list with a .value
+    # For Each Attribute
+    # Add the attribute to the list.
+    output = ""
+    if root == "":
+        dot = ""
+    else:
+        dot = "."
+    if "[i]" not in root:
+        level = "[i]"
+    else:
+        if "[j]" not in root:
+            level = "[j]"
+        else:
+            if "[k]" not in root:
+                level = "[k]"
+            else:
+                if "[l]" not in root:
+                    level = "[l]"
+                else:
+                    if "[m]" not in root:
+                        level = "[m]"
+                    else:
+                        raise error("Docassemble cannot handle nested lists of depth > 5")
+    if is_list(input_object):
+        new_root = root + dot + input_object['name'] + level
+        this_root = root + dot + input_object['name']
+    else:
+        new_root = root + dot + input_object['name']
+        this_root = new_root
+    if is_list(input_object):
+       output += "  - " + this_root + ".gather()\n"
+    else:
+       output += "  - " + this_root + ".value\n"
+    return output
 
 def generate_parent_values(input_object,parent="",parent_is_list=False,parent_is_objref=False):
     output = ""

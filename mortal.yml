@@ -1,0 +1,16 @@
+rules: mortal.pl
+query: mortal(X)
+data:
+  - name: thing
+    type: String
+    minimum: 0
+    encodings:
+      - thing(X)
+    attributes:
+      - name: Human
+        type: Boolean
+        encodings:
+          - human(Y)
+terms:
+  - mortal: |
+      capable of dying
