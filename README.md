@@ -34,7 +34,7 @@ you which of them are mortal.
 ## Input Format
 
 The input file must be a YAML file that has a `rules` attribute, a `query` attribute, and a `data` element. It can also
-optionally include a `terms` element.
+optionally include a `terms` element, and `options` to be passed along to docassemble-scasp.
 
 ## Rules
 
@@ -195,3 +195,19 @@ The terms element is a list of key-value pairs where the key is the text that is
 and the value is the text that should be displayed as the definition. The definition can include markdown formatting.
 In order to use this in the explanations, the same terms will need to be surrounded by curly braces wherever they
 are generated in your interview or s(CASP) code (e.g. `#pred mortal(X) :: "@(X) is {mortal}".`)
+
+## Options
+
+```
+options:
+  show models: True
+  answers: all
+```
+
+If you would like to specify options available in docassemble-scasp, you can do that using the `options`
+element. There are two configurations available, the number of answers to display (`answers`), and whether
+or not to display answer set models for the answers (`show models`). If `answers: all` or `answers: 0` is specified, all
+answers will be displayed, but this is also the default. If a number other than `0` is provided, only that number of answers will be displayed if they are available.
+
+If `show models: True` is specified as an option, models will be displayed with the answers. `False` is
+the default.

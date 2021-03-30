@@ -28,6 +28,14 @@ def main():
     output += "code: |\n"
     output += "  ruleSource = \"" + data_structure['rules'] + "\"\n"
     output += "  query = \"" + data_structure['query'] + ".\"\n"
+    if 'options' in data_structure:
+        if 'show models' in data_structure['options']:
+            output += "  show_models = " + str(data_structure['options']['show models']) + "\n"
+        if 'answers' in data_structure['options']:
+            if data_structure['options']['answers'] == "all":
+                output += "  scasp_number = 0" + "\n"
+            else:
+                output += "  scasp_number = " + str(data_structure['options']['answers']) + "\n"
     output += "---\n"
 
     ## Copy the terms from the source file
