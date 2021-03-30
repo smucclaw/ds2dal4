@@ -5,7 +5,7 @@ data:
     type: String
     minimum: 0
     ask: Tell me the name of a thing.
-    tell: the thing called X
+    tell: the thing called {X}
     any: This interview can help you see if things are {mortal}. Is there anything you want to ask about?
     another: Is there anything else you are curious about the mortality of?
     encodings:
@@ -13,7 +13,7 @@ data:
     attributes:
       - name: Human
         type: Boolean
-        ask: Does Y seem more or less human to you?
+        ask: Does {Y} seem more or less human to you?
         encodings:
           - human(Y)
 terms:
