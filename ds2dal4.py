@@ -205,10 +205,7 @@ def generate_parent_values(input_object,parent="",parent_is_list=False,parent_is
         output += "  " + parent + index + dot + input_object['name'] + nextindex + '.self_value = "' + input_object['name'].replace('_',' ') + '"\n'
         if parent != "": # This object has a parent
             #TODO: Allow the user to customize how this name is generated
-            output += "  " + parent + index + dot + input_object['name'] + nextindex + ".parent_value = " + parent + index + ".value"
-            if parent_is_objref:
-                output += ".value"
-            output += "\n"
+            output += "  " + parent + index + dot + input_object['name'] + nextindex + ".parent_value = " + parent + index + (".value.value" if parent_is_objref else ".value") + '\n'
         else:
             output += "  " + parent + index + dot + input_object['name'] + nextindex + ".parent_value = ''\n"
         if 'ask' in input_object:
@@ -217,10 +214,10 @@ def generate_parent_values(input_object,parent="",parent_is_list=False,parent_is
             output += "  " + parent + index + dot + input_object['name'] + nextindex + ".ask = \"\"\n"
         if 'tell' in input_object:
             output += "---\ncode: |\n"
-            output += "  " + parent + index + dot + input_object['name'] + nextindex + ".tell = \"" + input_object['tell'].replace('{X}',"\" + " + parent + index + dot + input_object['name'] + nextindex + ".value + \"").replace('{Y}',"\" + " + parent + index + ".tell + \"") + "\"\n"
+            output += "  " + parent + index + dot + input_object['name'] + nextindex + ".tell = \"" + input_object['tell'].replace('{X}',"\" + " + parent + index + dot + input_object['name'] + nextindex + (".value.value" if input_object['type'] == 'Object' else ".value") + " + \"").replace('{Y}',"\" + " + parent + index + ".tell + \"") + "\"\n"
         else:
             output += "---\ncode: |\n"
-            output += "  " + parent + index + dot + input_object['name'] + nextindex + ".tell = " + parent + index + dot + input_object['name'] + nextindex + ".value" + "\n"  
+            output += "  " + parent + index + dot + input_object['name'] + nextindex + ".tell = " + parent + index + dot + input_object['name'] + nextindex + (".value.value" if input_object['type'] == 'Object' else ".value") + "\n"  
         output += "---\n"
     if 'attributes' in input_object:
         for a in input_object['attributes']:
