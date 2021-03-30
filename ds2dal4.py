@@ -169,11 +169,20 @@ def generate_parent_values(input_object,parent="",parent_is_list=False,parent_is
         output += "\n"
     else:
         output += "  " + parent + index + dot + input_object['name'] + ".parent_value = ''\n"
-    if 'ask' in input_object:
-        
-        output += "  " + parent + index + dot + input_object['name'] + ".ask = \"" + input_object['ask'].replace(' Y '," \" + " + parent + index + dot + input_object['name'] + ".parent_value + \" ") + "\"\n"
+    if is_list(input_object):
+        if 'any' in input_object:
+            output += "  " + parent + index + dot + input_object['name'] + ".any = \"" + input_object['any'].replace(' Y '," \" + " + parent + index + dot + input_object['name'] + ".parent_value + \" ") + "\"\n"
+        else:
+            output += "  " + parent + index + dot + input_object['name'] + ".any = \"\"\n"
+        if 'another' in input_object:
+            output += "  " + parent + index + dot + input_object['name'] + ".another = \"" + input_object['another'].replace(' Y '," \" + " + parent + index + dot + input_object['name'] + ".parent_value + \" ") + "\"\n"
+        else:
+            output += "  " + parent + index + dot + input_object['name'] + ".another = \"\"\n"
     else:
-        output += "  " + parent + index + dot + input_object['name'] + ".ask = \"\"\n"
+        if 'ask' in input_object:
+            output += "  " + parent + index + dot + input_object['name'] + ".ask = \"" + input_object['ask'].replace(' Y '," \" + " + parent + index + dot + input_object['name'] + ".parent_value + \" ") + "\"\n"
+        else:
+            output += "  " + parent + index + dot + input_object['name'] + ".ask = \"\"\n"    
     output += "---\n"
     if is_list(input_object):
         if index == "[i]": nextindex = "[j]"
@@ -205,7 +214,7 @@ def generate_translation_code(input_object,indent_level=2,parent=""):
     # TODO: Object References should return .value.value
     output = ""
     def indent(): return (" ") * indent_level
-    output += indent() + "# Regarding " + input_object['name'] + "\n"
+    # output += indent() + "# Regarding " + input_object['name'] + "\n"
     if is_list(input_object):
         if parent == "": # This is a root list
             output += indent() + "for " + input_object['name'] + "_element in " + input_object['name'] + ":\n"
