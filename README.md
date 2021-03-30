@@ -60,7 +60,8 @@ The data element is where you specify what data the docassemble interview should
 The data element is a list of data items. Each data item is a dictionary that must include a `name` key, and a `type` key. Certain
 types require additional fields. Each data element can also optionally
 include an `encodings` element, an `attributes` element, a `minimum`
-element, a `maximum` element, and a `exactly` element.
+element, a `maximum` element, and a `exactly` element. To control the user interface, you can also
+optionally specify `ask`, `any`, and `another`.
 
 #### Name
 
@@ -134,12 +135,12 @@ thing(superman).
 
 Note that because the encoding for "human" refers to Y, it is the value of the parent object "bob", and  not the value of the boolean "True" that gets inserted into the s(CASP) statement.
 
-### Attributes
+#### Attributes
 
 The `attributes:` part of a data element is a list of data elements that should be collected "inside" this data element. Note that docassemble will complain about attributes
 nested more than 5 levels deep.
 
-### Cardinalities: Minimum, Maximum, Exactly
+#### Cardinalities: Minimum, Maximum, Exactly
 
 In order to tell docassemble how many of each data elements is relevant to your application, you can specify the cardinality with `minimum`, `maximum`, and `exactly`.
 
@@ -149,6 +150,39 @@ specified `exactly: 1`.
 If you specify a minimum and no maximum, or a minimum and a higher maximum, the data element will be collected as a list.
 
 You can create an optional single attribute by using `minimum: 0` and `maximum: 1`.
+
+#### Questions: Ask, Any, and Another
+
+By default, docassemble-l4 will generate questions to display to the user on the basis of the name you
+give to your data element. If you would like to customize the questions that are displayed to the user
+you can do that by setting the `ask`, `any` and `another` attributes on your data element.
+
+The `ask` element sets out the question that should be displayed when collecting the value of the data
+element. If you use the letter `Y` in this question, in the interview it will be replaced with the value
+of the parent data element. The `ask` element is the only element that can always be used.
+
+The `any` and `another` elements are used only if the data element is a list. If the list does not have
+a minimum or the minimum is zero, the user will be asked whether or not the list has any elements in it.
+The `any` element specifies how that question should be asked. Likewise, the `another` element speifies
+the question that should be asked when asking if the list has any additional elements.
+
+For example, if you are collecting a list of sports that a person plays, you might write this:
+
+```
+data:
+  - name: Person
+    type: String
+    attributes:
+      - name: sport
+        type: String
+        minimum: 0
+        any: Does Y play any sports?
+        ask: What sport does Y play?
+        another: Does Y play any other sports?
+```
+
+If the user enters "Janet" as the person's name, the user will be asked "Does Janet play any sports?",
+"What sport does Janet play?", and "Does Janet play any other sports?" as required.
 
 ### Terms
 ```

@@ -4,11 +4,15 @@ data:
   - name: thing
     type: String
     minimum: 0
+    ask: Tell me the name of a thing.
+    any: Is there anything you want to know if it is {mortal}?
+    another: Is there anything else you are curious about the mortality of?
     encodings:
       - thing(X)
     attributes:
       - name: Human
         type: Boolean
+        ask: Does Y seem more or less human to you?
         encodings:
           - human(Y)
 terms:
