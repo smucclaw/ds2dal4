@@ -2,8 +2,6 @@
 # DADataType object types and the s(CASP) reasoner on the basis of a YAML
 # description of a data structure.
 
-# TODO: Generate good custom question texts.
-
 from os import error
 import yaml
 import argparse
@@ -170,7 +168,6 @@ def generate_parent_values(input_object,parent="",parent_is_list=False,parent_is
     output += "code: |\n"
     output += "  " + parent + index + dot + input_object['name'] + '.self_value = "' + input_object['name'].replace('_',' ') + '"\n'
     if parent != "": # This object has a parent
-        #TODO: Allow the user to customize how this name is generated
         output += "  " + parent + index + dot + input_object['name'] + ".parent_value = " + parent + index + (".value.value" if parent_is_objref else ".value") + "\n"
     else:
         output += "  " + parent + index + dot + input_object['name'] + ".parent_value = ''\n"
@@ -204,7 +201,6 @@ def generate_parent_values(input_object,parent="",parent_is_list=False,parent_is
         output += "code: |\n"
         output += "  " + parent + index + dot + input_object['name'] + nextindex + '.self_value = "' + input_object['name'].replace('_',' ') + '"\n'
         if parent != "": # This object has a parent
-            #TODO: Allow the user to customize how this name is generated
             output += "  " + parent + index + dot + input_object['name'] + nextindex + ".parent_value = " + parent + index + (".value.value" if parent_is_objref else ".value") + '\n'
         else:
             output += "  " + parent + index + dot + input_object['name'] + nextindex + ".parent_value = ''\n"
