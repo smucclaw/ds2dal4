@@ -36,7 +36,7 @@ you which of them are mortal.
 The input file must be a YAML file that has a `rules` attribute, a `query` attribute, and a `data` element. It can also
 optionally include a `terms` element.
 
-### Rules
+## Rules
 
 ```
 rules: mortal.pl
@@ -45,7 +45,7 @@ rules: mortal.pl
 The rules element is the filename of the s(CASP) file that contains the rules you want to use. No path is provided, because
 the file must be located in the static folder of the package that the interview is located in.
 
-### Query
+## Query
 
 ```
 query: mortal(X)
@@ -53,7 +53,7 @@ query: mortal(X)
 
 The query element is a string that contains a valid s(CASP) query (without the trailing period).
 
-### Data
+## Data
 
 The data element is where you specify what data the docassemble interview should collect, and in what order, and how those pieces of data should be converted into s(CASP).
 
@@ -63,12 +63,12 @@ include an `encodings` element, an `attributes` element, a `minimum`
 element, a `maximum` element, and a `exactly` element. To control the user interface, you can also
 optionally specify `ask`, `any`, and `another`.
 
-#### Name
+### Name
 
 If you use underscores in the names, docassemble will replace those
 with spaces when displaying them to the user.
 
-#### Types
+### Types
 
 The types available are:
 
@@ -87,17 +87,17 @@ The types available are:
 Some of the types make additional dictionary entries mandatory for
 that data element.
 
-##### Enum
+#### Enum
 
 A data element of type Enum requires a `choices:` key, the value of
 which must me a Python dictionary where the keys are the values that should be set, and the values are what should be displayed to the user.
 
-##### Object
+#### Object
 
 A data element of type Object requires a `source:` key, the value of
 which must be the `name` of a root data element (a data element that is not an attribute of another data element) in the same file.
 
-#### Encodings
+### Encodings
 
 The encodings element is a list of s(CASP) statements that should be added to the rules with regard to the object that is collected, or
 the object of which it is an attribute, before the query is sent to the s(CASP) reasoner.
@@ -135,12 +135,12 @@ thing(superman).
 
 Note that because the encoding for "human" refers to Y, it is the value of the parent object "bob", and  not the value of the boolean "True" that gets inserted into the s(CASP) statement.
 
-#### Attributes
+### Attributes
 
 The `attributes:` part of a data element is a list of data elements that should be collected "inside" this data element. Note that docassemble will complain about attributes
 nested more than 5 levels deep.
 
-#### Cardinalities: Minimum, Maximum, Exactly
+### Cardinalities: Minimum, Maximum, Exactly
 
 In order to tell docassemble how many of each data elements is relevant to your application, you can specify the cardinality with `minimum`, `maximum`, and `exactly`.
 
@@ -151,7 +151,7 @@ If you specify a minimum and no maximum, or a minimum and a higher maximum, the 
 
 You can create an optional single attribute by using `minimum: 0` and `maximum: 1`.
 
-#### Questions: Ask, Any, and Another
+### Questions: Ask, Any, and Another
 
 By default, docassemble-l4 will generate questions to display to the user on the basis of the name you
 give to your data element. If you would like to customize the questions that are displayed to the user
@@ -184,7 +184,7 @@ data:
 If the user enters "Janet" as the person's name, the user will be asked "Does Janet play any sports?",
 "What sport does Janet play?", and "Does Janet play any other sports?" as required.
 
-### Terms
+## Terms
 ```
 terms:
   - mortal: |
