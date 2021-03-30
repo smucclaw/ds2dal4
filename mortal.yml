@@ -19,5 +19,4 @@ terms:
   - mortal: |
       capable of dying
 options:
-  answers: all
   show models: True
