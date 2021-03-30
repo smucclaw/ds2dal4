@@ -5,6 +5,7 @@ data:
     type: String
     minimum: 0
     ask: Tell me the name of a thing.
+    tell: the thing called X
     any: Is there anything you want to know if it is {mortal}?
     another: Is there anything else you are curious about the mortality of?
     encodings:
