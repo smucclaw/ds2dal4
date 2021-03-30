@@ -61,7 +61,7 @@ The data element is a list of data items. Each data item is a dictionary that mu
 types require additional fields. Each data element can also optionally
 include an `encodings` element, an `attributes` element, a `minimum`
 element, a `maximum` element, and a `exactly` element. To control the user interface, you can also
-optionally specify `ask`, `any`, and `another`.
+optionally specify `ask`, `tell`, `any`, and `another`.
 
 ### Name
 
@@ -151,7 +151,7 @@ If you specify a minimum and no maximum, or a minimum and a higher maximum, the 
 
 You can create an optional single attribute by using `minimum: 0` and `maximum: 1`.
 
-### Questions: Ask, Any, and Another
+### User Interface: Ask, Tell, Any, and Another
 
 By default, docassemble-l4 will generate questions to display to the user on the basis of the name you
 give to your data element. If you would like to customize the questions that are displayed to the user
@@ -159,7 +159,11 @@ you can do that by setting the `ask`, `any` and `another` attributes on your dat
 
 The `ask` element sets out the question that should be displayed when collecting the value of the data
 element. If you use the letter `Y` in this question, in the interview it will be replaced with the value
-of the parent data element. The `ask` element is the only element that can always be used.
+of the parent data element.
+
+The `tell` element sets out the text that should be used to describe the current element when it is
+referred to by its attributes. In this text the letter `Y` will be replaced with the tell value of the
+parent if there is one. In this text the letter `X` will be replaced with the value of this element. If you do not specify a `tell` value, the value of the object is used by itself.
 
 The `any` and `another` elements are used only if the data element is a list. If the list does not have
 a minimum or the minimum is zero, the user will be asked whether or not the list has any elements in it.
@@ -172,6 +176,7 @@ For example, if you are collecting a list of sports that a person plays, you mig
 data:
   - name: Person
     type: String
+    tell: the person named X
     attributes:
       - name: sport
         type: String
@@ -181,8 +186,8 @@ data:
         another: Does Y play any other sports?
 ```
 
-If the user enters "Janet" as the person's name, the user will be asked "Does Janet play any sports?",
-"What sport does Janet play?", and "Does Janet play any other sports?" as required.
+If the user enters "Janet" as the person's name, the user will be asked "Does the person named Janet play any sports?",
+"What sport does the person named Janet play?", and "Does the person named Janet play any other sports?" as required.
 
 ## Terms
 ```
