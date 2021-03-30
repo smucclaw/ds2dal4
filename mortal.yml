@@ -6,7 +6,7 @@ data:
     minimum: 0
     ask: Tell me the name of a thing.
     tell: the thing called X
-    any: Is there anything you want to know if it is {mortal}?
+    any: This interview can help you see if things are {mortal}. Is there anything you want to ask about?
     another: Is there anything else you are curious about the mortality of?
     encodings:
       - thing(X)
