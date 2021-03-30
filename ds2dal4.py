@@ -215,12 +215,12 @@ def generate_parent_values(input_object,parent="",parent_is_list=False,parent_is
         else:
             output += "  " + parent + index + dot + input_object['name'] + nextindex + ".parent_value = ''\n"
         if 'ask' in input_object:
-            output += "  " + parent + index + dot + input_object['name'] + nextindex + ".ask = \"" + input_object['ask'].replace('{Y}',"\" + " + parent + index + nextindex + ".tell + \"") + "\"\n"
+            output += "  " + parent + index + dot + input_object['name'] + nextindex + ".ask = \"" + input_object['ask'].replace('{Y}',"\" + " + parent + index + ".tell + \"") + "\"\n"
         else:
             output += "  " + parent + index + dot + input_object['name'] + nextindex + ".ask = \"\"\n"
         if 'tell' in input_object:
             output += "---\ncode: |\n"
-            output += "  " + parent + index + dot + input_object['name'] + nextindex + ".tell = \"" + input_object['tell'].replace('{X}',"\" + " + parent + index + dot + input_object['name'] + nextindex + ".value + \"").replace('{Y}',"\" + " + parent + index + nextindex + ".tell + \"") + "\"\n"
+            output += "  " + parent + index + dot + input_object['name'] + nextindex + ".tell = \"" + input_object['tell'].replace('{X}',"\" + " + parent + index + dot + input_object['name'] + nextindex + ".value + \"").replace('{Y}',"\" + " + parent + index + ".tell + \"") + "\"\n"
         else:
             output += "---\ncode: |\n"
             output += "  " + parent + index + dot + input_object['name'] + nextindex + ".tell = " + parent + index + dot + input_object['name'] + nextindex + ".value" + "\n"  
