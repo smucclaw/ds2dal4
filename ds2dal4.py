@@ -169,6 +169,11 @@ def generate_parent_values(input_object,parent="",parent_is_list=False,parent_is
         output += "\n"
     else:
         output += "  " + parent + index + dot + input_object['name'] + ".parent_value = ''\n"
+    if 'ask' in input_object:
+        
+        output += "  " + parent + index + dot + input_object['name'] + ".ask = \"" + input_object['ask'].replace(' Y '," \" + " + parent + index + dot + input_object['name'] + ".parent_value + \" ") + "\"\n"
+    else:
+        output += "  " + parent + index + dot + input_object['name'] + ".ask = \"\"\n"
     output += "---\n"
     if is_list(input_object):
         if index == "[i]": nextindex = "[j]"
@@ -186,6 +191,10 @@ def generate_parent_values(input_object,parent="",parent_is_list=False,parent_is
             output += "\n"
         else:
             output += "  " + parent + index + dot + input_object['name'] + nextindex + ".parent_value = ''\n"
+        if 'ask' in input_object:
+            output += "  " + parent + index + dot + input_object['name'] + nextindex + ".ask = \"" + input_object['ask'].replace(' Y ',' ${ x.parent_value } ') + "\"\n"
+        else:
+            output += "  " + parent + index + dot + input_object['name'] + nextindex + ".ask = \"\"\n"
         output += "---\n"
     if 'attributes' in input_object:
         for a in input_object['attributes']:

@@ -9,6 +9,7 @@ data:
     attributes:
       - name: Human
         type: Boolean
+        ask: Does Y seem more or less human to you?
         encodings:
           - human(Y)
 terms:
