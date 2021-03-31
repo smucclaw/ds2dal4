@@ -2,6 +2,8 @@
 # DADataType object types and the s(CASP) reasoner on the basis of a YAML
 # description of a data structure.
 
+# TODO: Allow the user to specify whatever text they would like (e.g. spaces, capital letters)
+
 from os import error
 import yaml
 import argparse
