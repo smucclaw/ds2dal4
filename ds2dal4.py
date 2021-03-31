@@ -26,7 +26,7 @@ def main():
     ## Generate the parameters for DAScasp
     output += "mandatory: True \n"
     output += "code: |\n"
-    output += "  ruleSource = \"" + data_structure['rules'] + "\"\n"
+    output += "  ruleSource = user_info().package + \"" + data_structure['rules'] + "\"\n"
     output += "  query = \"" + data_structure['query'] + ".\"\n"
     if 'options' in data_structure:
         if 'show models' in data_structure['options']:
