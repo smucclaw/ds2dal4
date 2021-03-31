@@ -243,9 +243,9 @@ def generate_translation_code(input_object,indent_level=2,parent=""):
                 indent_level += 2
             for e in input_object['encodings']:
                 if parent == "":
-                    output += indent() + "facts += \"" + e.replace('X',"da_SCASP\" + urllib.parse.quote_plus(str(" + input_object['name'] + "_element.value)) + \"") + ".\\n\"\n"
+                    output += indent() + "facts += \"" + e.replace('X',"da_SCASP\" + urllib.parse.quote_plus(str(" + input_object['name'] + "_element.value)).replace('%','__perc__') + \"") + ".\\n\"\n"
                 else:
-                    output += indent() + "facts += \"" + e.replace('X',"da_SCASP\" + urllib.parse.quote_plus(str(" + input_object['name'] + "_element.value)) + \"").replace('Y',"da_SCASP\" + urllib.parse.quote_plus(str(" + parent + ".value)) + \"") + ".\\n\"\n"
+                    output += indent() + "facts += \"" + e.replace('X',"da_SCASP\" + urllib.parse.quote_plus(str(" + input_object['name'] + "_element.value)).replace('%','__perc__') + \"").replace('Y',"da_SCASP\" + urllib.parse.quote_plus(str(" + parent + ".value)).replace('%','__perc__') + \"") + ".\\n\"\n"
             if input_object['type'] == "Boolean":
                 indent_level -= 2
         if 'attributes' in input_object:
@@ -262,9 +262,9 @@ def generate_translation_code(input_object,indent_level=2,parent=""):
                 indent_level += 2
             for e in input_object['encodings']:
                 if parent == "":
-                    output += indent() + "facts += \"" + e.replace('X',"da_SCASP\" + urllib.parse.quote_plus(str(" + input_object['name'] + ".value)) + \"") + ".\\n\"\n"
+                    output += indent() + "facts += \"" + e.replace('X',"da_SCASP\" + urllib.parse.quote_plus(str(" + input_object['name'] + ".value)).replace('%','__perc__') + \"") + ".\\n\"\n"
                 else:
-                    output += indent() + "facts += \"" + e.replace('X',"da_SCASP\" + urllib.parse.quote_plus(str(" + parent + "." + input_object['name'] + ".value)) + \"").replace('Y',"da_SCASP\" + urllib.parse.quote_plus(str(" + parent + ".value)) + \"") + ".\\n\"\n"
+                    output += indent() + "facts += \"" + e.replace('X',"da_SCASP\" + urllib.parse.quote_plus(str(" + parent + "." + input_object['name'] + ".value)).replace('%','__perc__') + \"").replace('Y',"da_SCASP\" + urllib.parse.quote_plus(str(" + parent + ".value)).replace('%','__perc__') + \"") + ".\\n\"\n"
             if input_object['type'] == "Boolean":
                 indent_level -= 2
         if 'attributes' in input_object:
