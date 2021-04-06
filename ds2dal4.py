@@ -2,8 +2,6 @@
 # DADataType object types and the s(CASP) reasoner on the basis of a YAML
 # description of a data structure.
 
-# TODO: Allow the user to specify whatever text they would like (e.g. spaces, capital letters)
-
 from os import error
 import yaml
 import argparse
@@ -24,7 +22,7 @@ def main():
     output += "---\n"
 
     ## Not sure why, but this seems to be necessary.
-    output = "modules:\n"
+    output += "modules:\n"
     output += "  - docassemble.datatypes.DADataType\n"
     output += "---\n"
 
@@ -66,11 +64,11 @@ def main():
         output += make_complete_code_block(var)
 
     ## Generate Agenda Block (Temporarily Including Everything in The Root)
-    output += "variable name: agenda\n"
-    output += "data:\n"
-    for var in data_structure['data']:
-        output += add_to_agenda(var)
-    output += "---\n"
+    #output += "variable name: agenda\n"
+    #output += "data:\n"
+    #for var in data_structure['data']:
+    #    output += add_to_agenda(var)
+    #output += "---\n"
 
     ## Generate a Code Block That will Generate s(CASP) code.
     output += "code: |\n"
@@ -86,9 +84,10 @@ def main():
         output += generate_parent_values(var)
 
     ## Generate Mandatory Code Block That Will Prompt Collection
-    ## TODO: Update this to eliminate the need to include .gather() or .value in the agenda
     output += "mandatory: True\n"
     output += "code: |\n"
+    output += "  agenda = generate_agenda()\n"
+    output += "  subagenda = generate_subagenda()\n"
     output += "  for a in agenda:\n"
     output += "    exec(a)\n"
     output += "---\n"
@@ -235,24 +234,31 @@ def generate_translation_code(input_object,indent_level=2,parent=""):
     # output += indent() + "# Regarding " + input_object['name'] + "\n"
     if is_list(input_object):
         if parent == "": # This is a root list
-            output += indent() + "for " + input_object['name'] + "_element in " + input_object['name'] + ":\n"
+            output += indent() + "if defined('" + input_object['name'] + "'):\n"
+            output += indent() + "  for " + input_object['name'] + "_element in " + input_object['name'] + ":\n"
         else: # This is a non-root list
-            output += indent() + "for " + input_object['name'] + "_element in " + parent + "." + input_object['name'] + ":\n"
-        indent_level += 2
+            output += indent() + "if defined('" + parent + "." + input_object['name'] + "'):\n"
+            output += indent() + "  for " + input_object['name'] + "_element in " + parent + "." + input_object['name'] + ":\n"
+        indent_level += 4
         if 'encodings' in input_object:
             if input_object['type'] == "Boolean":
                 if parent == "":
-                    output += indent() + "if " + input_object['name'] + "_element.value:\n"
+                    output += indent() + "if defined('" + input_object['name'] + "_element.value') and " + input_object['name'] + "_element.value:\n"
                 else:
-                    output += indent() + "if " + parent + "." + input_object['name'] + "_element.value:\n"
-                indent_level += 2
+                    output += indent() + "if defined('" + parent + "." + input_object['name'] + "_element.value') and " + parent + "." + input_object['name'] + "_element.value:\n"
+            else:
+                if parent == "":
+                    output += indent() + "if defined('" + input_object['name'] + "_element.value'):\n"
+                else:
+                    output += indent() + "if defined('" + parent + "." + input_object['name'] + "_element.value'):\n"
+            indent_level += 2
             for e in input_object['encodings']:
                 if parent == "":
                     output += indent() + "facts += \"" + e.replace('X',"daSCASP_\" + urllib.parse.quote_plus(str(" + input_object['name'] + "_element.value)).replace('%','__perc__').replace('+','__plus__') + \"") + ".\\n\"\n"
                 else:
                     output += indent() + "facts += \"" + e.replace('X',"daSCASP_\" + urllib.parse.quote_plus(str(" + input_object['name'] + "_element.value)).replace('%','__perc__').replace('+','__plus__') + \"").replace('Y',"daSCASP_\" + urllib.parse.quote_plus(str(" + parent + ".value)).replace('%','__perc__').replace('+','__plus__') + \"") + ".\\n\"\n"
-            if input_object['type'] == "Boolean":
-                indent_level -= 2
+            # if input_object['type'] == "Boolean": # we are now indenting for everything.
+            indent_level -= 2
         if 'attributes' in input_object:
             for a in input_object['attributes']:
                 output += generate_translation_code(a,indent_level,input_object['name'] + "_element")
@@ -261,17 +267,22 @@ def generate_translation_code(input_object,indent_level=2,parent=""):
         if 'encodings' in input_object:
             if input_object['type'] == "Boolean":
                 if parent == "":
-                    output += indent() + "if " + input_object['name'] + ".value:\n"
+                    output += indent() + "if defined('" + input_object['name'] + ".value') and " + input_object['name'] + ".value:\n"
                 else:
-                    output += indent() + "if " + parent + "." + input_object['name'] + ".value:\n"
-                indent_level += 2
+                    output += indent() + "if defined('" + parent + "." + input_object['name'] + ".value') and " + parent + "." + input_object['name'] + ".value:\n"
+            else:
+                if parent == "":
+                    output += indent() + "if defined('" + input_object['name'] + ".value'):\n"
+                else:
+                    output += indent() + "if defined('" + parent + "." + input_object['name'] + ".value'):\n"
+            indent_level += 2
             for e in input_object['encodings']:
                 if parent == "":
                     output += indent() + "facts += \"" + e.replace('X',"daSCASP_\" + urllib.parse.quote_plus(str(" + input_object['name'] + ".value)).replace('%','__perc__').replace('+','__plus__') + \"") + ".\\n\"\n"
                 else:
                     output += indent() + "facts += \"" + e.replace('X',"daSCASP_\" + urllib.parse.quote_plus(str(" + parent + "." + input_object['name'] + ".value)).replace('%','__perc__').replace('+','__plus__') + \"").replace('Y',"daSCASP_\" + urllib.parse.quote_plus(str(" + parent + ".value)).replace('%','__perc__').replace('+','__plus__') + \"") + ".\\n\"\n"
-            if input_object['type'] == "Boolean":
-                indent_level -= 2
+            #if input_object['type'] == "Boolean":
+            indent_level -= 2
         if 'attributes' in input_object:
             for a in input_object['attributes']:
                 if parent == "":
@@ -308,13 +319,16 @@ def make_complete_code_block(input_object,root=""):
         new_root = root + dot + input_object['name']
     if is_list(input_object):
         output += "code: |\n"
-        output += "  " + new_root + ".value\n"
+        output += "  if \"" + new_root + ".value\" in subagenda:\n"
+        output += "    " + new_root + ".value\n"
         if 'attributes' in input_object:
             for a in input_object['attributes']:
                 if is_list(a):
-                    output += "  " + new_root + "." + a['name'] + ".gather()\n"
+                    output += "  if \"" + new_root + "." + a['name'] + ".gather()\" in subagenda:\n"
+                    output += "    " + new_root + "." + a['name'] + ".gather()\n"
                 else:
-                    output += "  " + new_root + "." + a['name'] + ".value\n"
+                    output += "  if \"" + new_root + "." + a['name'] + ".value\" in subagenda:\n"
+                    output += "    " + new_root + "." + a['name'] + ".value\n"
         output += "  " + new_root + ".complete =  True\n"
         output += "---\n"
     if 'attributes' in input_object:
