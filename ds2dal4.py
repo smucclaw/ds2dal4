@@ -87,10 +87,7 @@ def main():
 
     ## Generate Code For Agenda and Sub-Agenda
     output += "code: |\n"
-    output += "  agenda = generate_agenda()\n"
-    output += "---\n"
-    output += "code: |\n"
-    output += "  subagenda = generate_subagenda(rules.slurp(),query,data_structure)\n"
+    output += "  (agenda, subagenda) = generate_agendas(rules.slurp(),query,data_structure)\n"
     output += "---\n"
 
     ## Generate Mandatory Code Block That Will Prompt Collection
