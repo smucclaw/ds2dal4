@@ -2,6 +2,9 @@
 # DADataType object types and the s(CASP) reasoner on the basis of a YAML
 # description of a data structure.
 
+# TODO: Need to separate the code for agenda and subagenda, add the rules.slurp(),query,data_structure
+# to the command for subagenda.
+
 from os import error
 import yaml
 import argparse
@@ -49,7 +52,8 @@ def main():
 
     ## Include the Source File So It Can Be Accessed At RunTime
     output += "variable name: data_structure\n"
-    output += yaml.dump(data_structure,width=1000000)
+    output += "data:\n  "
+    output += '  '.join(yaml.dump(data_structure,width=1000000).splitlines(True))
     output += "---\n"
 
 
