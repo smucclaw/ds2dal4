@@ -23,6 +23,11 @@ def main():
     output += "  - docassemble.l4:l4.yml\n"
     output += "---\n"
 
+    ## Not sure why, but this seems to be necessary.
+    output = "modules:\n"
+    output += "  - docassemble.datatypes.DADataType\n"
+    output += "---\n"
+
     ## Generate the parameters for DAScasp
     output += "mandatory: True \n"
     output += "code: |\n"
