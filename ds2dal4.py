@@ -87,11 +87,17 @@ def main():
     for var in data_structure['data']:
         output += generate_parent_values(var)
 
+    ## Generate Code For Agenda and Sub-Agenda
+    output += "code: |\n"
+    output += "  agenda = generate_agenda()\n"
+    output += "---\n"
+    output += "code: |\n"
+    output += "  subagenda = generate_subagenda(rules.slurp(),query,data_structure)\n"
+    output += "---\n"
+
     ## Generate Mandatory Code Block That Will Prompt Collection
     output += "mandatory: True\n"
     output += "code: |\n"
-    output += "  agenda = generate_agenda()\n"
-    output += "  subagenda = generate_subagenda()\n"
     output += "  for a in agenda:\n"
     output += "    exec(a)\n"
     output += "---\n"
