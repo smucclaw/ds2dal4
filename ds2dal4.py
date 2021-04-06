@@ -2,8 +2,6 @@
 # DADataType object types and the s(CASP) reasoner on the basis of a YAML
 # description of a data structure.
 
-# TODO: Need to separate the code for agenda and subagenda, add the rules.slurp(),query,data_structure
-# to the command for subagenda.
 
 from os import error
 import yaml
